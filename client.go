@@ -1,14 +1,17 @@
 package dongfang
 
 type Client struct {
-	Market Marketer
-	Kline  KlineReq
+	Market MarketImpl
+	Kline  KlineImpl
 }
 
-type Marketer interface {
+type MarketImpl interface {
 	Get(marketType string) []Stock
 }
 
-type KlineReq interface {
+type KlineImpl interface {
 	Get(symbol string) []Kline
+}
+
+type QuoteImpl interface {
 }

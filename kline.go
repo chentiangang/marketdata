@@ -1,5 +1,9 @@
 package dongfang
 
+import (
+	"time"
+)
+
 type Kline struct {
 	Timestamp   time.Time `json:"timestamp"`    // 时间戳
 	Open        float64   `json:"open"`         // 开盘价

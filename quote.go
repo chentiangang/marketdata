@@ -1,7 +1,7 @@
 package dongfang
 
-type Quote struct {
-}
+//type Quote struct {
+//}
 
 type Stock struct {
 	Symbol           string  `json:"symbol"`
