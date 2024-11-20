@@ -1,5 +1,7 @@
 package marketdata
 
+import "project/stock/marketdata/dongfang"
+
 type Client struct {
 	Market         MarketImpl
 	Kline          KlineImpl
@@ -8,7 +10,7 @@ type Client struct {
 }
 
 type MarketImpl interface {
-	Get(marketType string) []Stock
+	Fetch() ([]Stock, error)
 }
 
 type KlineImpl interface {
@@ -24,5 +26,8 @@ type QuoteImpl interface {
 }
 
 func NewDefaultClient() *Client {
-	return &Client{}
+	return &Client{
+		Market: dongfang.NewDefaultMarketRequest(),
+	}
+
 }
