@@ -64,6 +64,23 @@ const (
 	UsMarket    = "b:MK0001"
 )
 
+var defaultMarketHeader = map[string]string{
+	"accept-encoding":    "gzip, deflate, br, zstd",
+	"Content-type":       "text/event-stream",
+	"Accept-language":    "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+	"Cache-Control":      "no-cache",
+	"Connection":         "keep-alive",
+	"Origin":             "https://quote.eastmoney.com",
+	"Referer":            "https://quote.eastmoney.com/zixuan/?from=home",
+	"Sec-ch-ua":          `"Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128"`,
+	"Sec-ch-ua-mobile":   "?0",
+	"Sec-ch-ua-platform": "macOS",
+	"Sec-fetch-dest":     "empty",
+	"Sec-fetch-mode":     "cors",
+	"Sec-fetch-site":     "same-site",
+	"User-Agent":         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0",
+}
+
 func NewDefaultMarketRequest() *MarketRequest {
 	return &MarketRequest{
 		BaseURL:    Domain(),
@@ -107,29 +124,11 @@ func (mr *MarketRequest) BuildRequest(pageNum, pageSize int) error {
 	mr.Request = req
 
 	// Set headers
-
-	mr.SetHeader("accept-encoding", "gzip, deflate, br, zstd")
-	mr.SetHeader("Content-type", "text/event-stream")
-	mr.SetHeader("Accept-language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6")
-	mr.SetHeader("Cache-Control", "no-cache")
-	mr.SetHeader("Connection", "keep-alive")
-	//mr.SetHeader("Host", mr.Request.Host)
-	mr.SetHeader("Origin", "https://quote.eastmoney.com")
-	mr.SetHeader("Referer", "https://quote.eastmoney.com/zixuan/?from=home")
-	mr.SetHeader("Sec-ch-ua", `"Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128"`)
-	mr.SetHeader("Sec-ch-ua-mobile", "?0")
-	mr.SetHeader("Sec-ch-ua-platform", "macOS")
-	mr.SetHeader("Sec-fetch-dest", "empty")
-	mr.SetHeader("Sec-fetch-mode", "cors")
-	mr.SetHeader("Sec-fetch-site", "same-site")
-	mr.SetHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0")
+	for k, v := range defaultMarketHeader {
+		mr.SetHeader(k, v)
+	}
 
 	return nil
-}
-
-// Do sends the request and returns the response.
-func (mr *MarketRequest) Do(client *http.Client) (*http.Response, error) {
-	return client.Do(mr.Request)
 }
 
 func alias(name string) string {
