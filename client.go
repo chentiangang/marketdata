@@ -1,6 +1,9 @@
 package marketdata
 
-import "project/stock/marketdata/dongfang"
+import (
+	"marketdata/dongfang"
+	"marketdata/model"
+)
 
 type Client struct {
 	Market         MarketImpl
@@ -10,11 +13,11 @@ type Client struct {
 }
 
 type MarketImpl interface {
-	Fetch() ([]Stock, error)
+	Fetch() ([]model.Stock, error)
 }
 
 type KlineImpl interface {
-	Get(symbol string) []Kline
+	Get(symbol string)
 }
 
 type RealTimeQuoteImpl interface {

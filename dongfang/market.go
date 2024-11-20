@@ -181,44 +181,44 @@ func exist(name string) bool {
 
 func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
 
-	bs, err := Unzip(respon)
-	defer respon.Body.Close()
-	if err != nil {
-		xlog.Error("reader error: %s", err)
-		return nil, nil
-	}
-	trim := strings.Trim(string(bs), "jQuery11240699042934591428_1726233885825(")
-	trim = strings.Trim(trim, ");")
-	var resp Resp
-
-	//fmt.Println(trim)
-	err = json.Unmarshal([]byte(trim), &resp)
-	if err != nil {
-		xlog.Error("Error decoding JSON: %s", err)
-		return
-	}
-
-	if len(resp.Data.Diff) == 0 {
-		return nil, errors.New("no change")
-	}
-
-	for _, v := range resp.Data.Diff {
-		// 过滤退市
-		if fmt.Sprintf("%v", v.F2) == "-" {
-			continue
-		}
-		var q quote.Stock
-		q.Name = v.F14
-		q.Symbol = v.F12
-		q.Price = math.ConvertToFloat64(v.F2)
-		q.PriceLimit = math.ConvertToFloat64(v.F3)
-		q.DifferenceValue = math.ConvertToFloat64(v.F4)
-		q.TurnoverRate = math.ConvertToFloat64(v.F8)
-		q.Exchange = v.F13
-		q.Alias = alias(strings.TrimSpace(v.F14))
-		q.TotalValue = math.ConvertToInt(v.F20)
-		q.CirculatingValue = math.ConvertToInt(v.F21)
-		qs = append(qs, q)
-	}
+	//bs, err := Unzip(respon)
+	//defer respon.Body.Close()
+	//if err != nil {
+	//	xlog.Error("reader error: %s", err)
+	//	return nil, nil
+	//}
+	//trim := strings.Trim(string(bs), "jQuery11240699042934591428_1726233885825(")
+	//trim = strings.Trim(trim, ");")
+	//var resp Resp
+	//
+	////fmt.Println(trim)
+	//err = json.Unmarshal([]byte(trim), &resp)
+	//if err != nil {
+	//	xlog.Error("Error decoding JSON: %s", err)
+	//	return
+	//}
+	//
+	//if len(resp.Data.Diff) == 0 {
+	//	return nil, errors.New("no change")
+	//}
+	//
+	//for _, v := range resp.Data.Diff {
+	//	// 过滤退市
+	//	if fmt.Sprintf("%v", v.F2) == "-" {
+	//		continue
+	//	}
+	//	var q quote.Stock
+	//	q.Name = v.F14
+	//	q.Symbol = v.F12
+	//	q.Price = math.ConvertToFloat64(v.F2)
+	//	q.PriceLimit = math.ConvertToFloat64(v.F3)
+	//	q.DifferenceValue = math.ConvertToFloat64(v.F4)
+	//	q.TurnoverRate = math.ConvertToFloat64(v.F8)
+	//	q.Exchange = v.F13
+	//	q.Alias = alias(strings.TrimSpace(v.F14))
+	//	q.TotalValue = math.ConvertToInt(v.F20)
+	//	q.CirculatingValue = math.ConvertToInt(v.F21)
+	//	qs = append(qs, q)
+	//}
 	return qs, nil
 }
