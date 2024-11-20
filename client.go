@@ -32,5 +32,4 @@ func NewDefaultClient() *Client {
 	return &Client{
 		Market: dongfang.NewDefaultMarketRequest(),
 	}
-
 }
