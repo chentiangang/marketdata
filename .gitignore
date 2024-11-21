@@ -1,6 +1,5 @@
 .idea/*
 vendor
 *.exe
-test
 test/test.exe
 test/test
