@@ -9,6 +9,9 @@ github.com/chentiangang/xlog
 ## explicit; go 1.22
 github.com/cinar/indicator/v2/asset
 github.com/cinar/indicator/v2/helper
+# github.com/duke-git/lancet/v2 v2.3.3
+## explicit; go 1.18
+github.com/duke-git/lancet/v2/strutil
 # github.com/klauspost/compress v1.17.11
 ## explicit; go 1.21
 github.com/klauspost/compress

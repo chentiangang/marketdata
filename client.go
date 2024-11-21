@@ -3,7 +3,6 @@ package marketdata
 import (
 	"marketdata/dongfang"
 	"marketdata/model"
-	"net/http"
 )
 
 type Client struct {
@@ -22,8 +21,11 @@ type KlineImpl interface {
 }
 
 type RealTimeQuoteImpl interface {
-	Request(symbol string)
-	Parse(*http.Response) ([]model.QuotePtr, error)
+	Fetch() chan []model.QuotePtr
+	SetSymbols(symbols []string)
+	Close()
+	//Add(symbol, exchange string)
+	//Delete(symbol string)
 }
 
 type QuoteImpl interface {
@@ -32,7 +34,8 @@ type QuoteImpl interface {
 
 func NewDefaultClient() *Client {
 	return &Client{
-		Market: dongfang.NewDefaultMarketRequest(),
-		Kline:  dongfang.NewDefaultKlineRequest(),
+		Market:         dongfang.NewDefaultMarketRequest(),
+		Kline:          dongfang.NewDefaultKlineRequest(),
+		RealTimeQuotes: dongfang.NewRealtimeQuoteRequest(),
 	}
 }

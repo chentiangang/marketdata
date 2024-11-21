@@ -4,6 +4,8 @@ github.com/chentiangang/xlog v0.0.0-20240926064041-fafd2b19246c h1:q6u+sKqV/kTxD
 github.com/chentiangang/xlog v0.0.0-20240926064041-fafd2b19246c/go.mod h1:Ply6A/5mESc6c21o4kcDPu/tVK7wOaChyxI4v6HDt/E=
 github.com/cinar/indicator/v2 v2.1.9 h1:88XmZ+HTIObUWBugScVNzzPJBx5JMbciLLa2+3eQkio=
 github.com/cinar/indicator/v2 v2.1.9/go.mod h1:Ts293VYPlwl2QpRdXw+LJmadRmYEmrmkKWdvNGA/xQs=
+github.com/duke-git/lancet/v2 v2.3.3 h1:OhqzNzkbJBS9ZlWLo/C7g+WSAOAAyNj7p9CAiEHurUc=
+github.com/duke-git/lancet/v2 v2.3.3/go.mod h1:zGa2R4xswg6EG9I6WnyubDbFO/+A/RROxIbXcwryTsc=
 github.com/klauspost/compress v1.17.11 h1:In6xLpyWOi1+C7tXUUWv2ot1QvBjxevKAaI6IXrJmUc=
 github.com/klauspost/compress v1.17.11/go.mod h1:pMDklpSncoRMuLFrf1W9Ss9KT+0rH90U12bZKk7uwG0=
 github.com/mozillazg/go-pinyin v0.20.0 h1:BtR3DsxpApHfKReaPO1fCqF4pThRwH9uwvXzm+GnMFQ=

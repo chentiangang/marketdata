@@ -1,10 +1,25 @@
 package dongfang
 
-import "net/http"
+import (
+	"bufio"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"marketdata/model"
+	"marketdata/util"
+	"net/http"
+	"net/url"
+	"strings"
 
-type RealtimeQuoteRequest struct {
-	BaseURL string
-	Request *http.Request
+	"github.com/chentiangang/xlog"
+	"github.com/duke-git/lancet/v2/strutil"
+)
+
+type RealtimeQuote struct {
+	BaseURL  string
+	Symbols  []string
+	Request  *http.Request
+	Response *http.Response
 }
 
 type RealtimeQuoteResponse struct {
@@ -52,11 +67,10 @@ type RealtimeQuoteData struct {
 }
 
 var defaultRealTimeQuoteHeaders = map[string]string{
-	"Content-type":    "text/event-stream",
-	"Accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-	"Cache-Control":   "no-cache",
-	"Connection":      "keep-alive",
-	//"Host", sse.Host)
+	"Content-type":       "text/event-stream",
+	"Accept-language":    "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+	"Cache-Control":      "no-cache",
+	"Connection":         "keep-alive",
 	"Origin":             "https://quote.eastmoney.com",
 	"Referer":            "https://quote.eastmoney.com/zixuan/?from=home",
 	"Sec-ch-ua":          `"Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128"`,
@@ -68,14 +82,158 @@ var defaultRealTimeQuoteHeaders = map[string]string{
 	"User-Agent":         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0",
 }
 
-func NewRealtimeQuoteRequest() *RealtimeQuoteRequest {
-	return &RealtimeQuoteRequest{}
+func NewRealtimeQuoteRequest() *RealtimeQuote {
+	return &RealtimeQuote{
+		BaseURL: Domain() + "/api/qt/ulist/sse",
+	}
 }
 
-func (r *RealtimeQuoteRequest) SetHeader(key, value string) {
+func (r *RealtimeQuote) SetHeader(key, value string) {
 	r.Request.Header.Set(key, value)
 }
 
-func (r *RealtimeQuoteRequest) BuildRequest() {
+func (r *RealtimeQuote) BuildRequest() error {
+	u, err := url.Parse(r.BaseURL)
+	if err != nil {
+		xlog.Error("%s", err)
+		return err
+	}
+	query := u.Query()
+	query.Set("secids", strings.Join(r.Symbols, ","))
+	query.Set("fields", "f12,f13,f19,f14,f139,f148,f2,f4,f1,f125,f18,f3,f152,f5,f30,f31,f32,f6,f8,f7,f10,f22,f9,f112,f100")
+	query.Set("invt", "3")
+	query.Set("ut", ut())
+	query.Set("fid", "")
+	query.Set("mpi", "1000")
+	query.Set("po", "1")
+	query.Set("pi", "0")
+	query.Set("pz", fmt.Sprintf("%d", len(r.Symbols)))
+	query.Set("dect", "1")
+	u.RawQuery = query.Encode()
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		xlog.Error("%s", err)
+		return err
+	}
+	r.Request = req
 
+	// Set headers
+	for k, v := range defaultRealTimeQuoteHeaders {
+		r.SetHeader(k, v)
+	}
+	return nil
+}
+
+func (r *RealtimeQuote) SetSymbols(symbols []string) {
+	r.Symbols = symbols
+}
+
+func (r *RealtimeQuote) Fetch() chan []model.QuotePtr {
+	ch := make(chan []model.QuotePtr, 2)
+	//fmt.Println(r.Symbols)
+	err := r.BuildRequest()
+	if err != nil {
+		xlog.Error("%s", err)
+		return nil
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(r.Request)
+	if err != nil {
+		xlog.Error("%s", err)
+		return nil
+	}
+
+	//defer resp.Body.Close()
+	if err != nil {
+		xlog.Error("%s", err)
+		return nil
+	}
+	scanner := bufio.NewScanner(resp.Body)
+	for {
+		if !scanner.Scan() {
+			if err := scanner.Err(); err != nil {
+				xlog.Error("SseSub scanner error: %s", err)
+			}
+			return nil
+		}
+		line := scanner.Text()
+		fmt.Println(line)
+		if len(line) > 0 {
+			data, err := r.parse([]byte(line))
+			if err != nil {
+				xlog.Error("%s", err)
+				continue
+			}
+			ch <- data
+		}
+	}
+	return nil
+}
+
+func (r *RealtimeQuote) parse(bs []byte) (qs []model.QuotePtr, err error) {
+	trim := strutil.Trim(string(bs), "data:")
+	var resp RealtimeQuoteResponse
+	err = json.Unmarshal([]byte(trim), &resp)
+	if err != nil {
+		xlog.Error("%s", err)
+		xlog.Error("%s", string(bs))
+		return qs, err
+	}
+
+	if resp.Data == nil {
+		return nil, err
+	}
+
+	if len(resp.Data.Diff) == 0 {
+		return nil, errors.New("no change")
+	}
+
+	for _, v := range resp.Data.Diff {
+		var q model.QuotePtr
+		q.Name = v.F14
+		q.Symbol = v.F12
+
+		if v.F2 != nil {
+			q.Price = new(float64)
+			*q.Price = util.DivideByHundred(*v.F2)
+		}
+
+		if v.F3 != nil {
+			q.PriceLimit = new(float64)
+			*q.PriceLimit = util.DivideByHundred(*v.F3)
+		}
+
+		if v.F4 != nil {
+			q.DifferenceValue = new(float64)
+			*q.DifferenceValue = util.DivideByHundred(*v.F4)
+		}
+
+		if v.F8 != nil {
+			q.TurnoverRate = new(float64)
+			*q.TurnoverRate = util.DivideByHundred(*v.F8)
+		}
+
+		if v.F20 != nil {
+			q.TotalValue = new(int64)
+			*q.TotalValue = util.ConvertToInt(v.F20)
+		}
+
+		if v.F21 != nil {
+			q.CirculatingValue = new(int64)
+			*q.CirculatingValue = util.ConvertToInt(v.F21)
+		}
+
+		if v.F84 != nil {
+			q.TotalShares = new(int64)
+			*q.TotalShares = util.ConvertToInt(v.F84)
+		}
+
+		qs = append(qs, q)
+	}
+	return qs, nil
+}
+
+func (r *RealtimeQuote) Close() {
+	r.Response.Body.Close()
 }
