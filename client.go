@@ -17,7 +17,7 @@ type MarketImpl interface {
 }
 
 type KlineImpl interface {
-	Get(symbol string)
+	Fetch(symbol string, period string, limit string) (model.Kline, error)
 }
 
 type RealTimeQuoteImpl interface {
@@ -31,5 +31,6 @@ type QuoteImpl interface {
 func NewDefaultClient() *Client {
 	return &Client{
 		Market: dongfang.NewDefaultMarketRequest(),
+		Kline:  dongfang.NewDefaultKlineRequest(),
 	}
 }

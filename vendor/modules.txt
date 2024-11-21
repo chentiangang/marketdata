@@ -5,6 +5,10 @@ github.com/andybalholm/brotli/matchfinder
 # github.com/chentiangang/xlog v0.0.0-20240926064041-fafd2b19246c
 ## explicit; go 1.15
 github.com/chentiangang/xlog
+# github.com/cinar/indicator/v2 v2.1.9
+## explicit; go 1.22
+github.com/cinar/indicator/v2/asset
+github.com/cinar/indicator/v2/helper
 # github.com/klauspost/compress v1.17.11
 ## explicit; go 1.21
 github.com/klauspost/compress

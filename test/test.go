@@ -9,10 +9,13 @@ import (
 
 func main() {
 	client := marketdata.NewDefaultClient()
-	s, err := client.Market.Fetch()
+	line, err := client.Kline.Fetch("0.002957", "15", "260")
 	if err != nil {
 		xlog.Error("%s", err)
 		return
 	}
-	fmt.Println(len(s))
+	fmt.Println(line)
+	for _, i := range line.Snapshots {
+		fmt.Println(i)
+	}
 }

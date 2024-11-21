@@ -36,9 +36,9 @@ func Domain() string {
 	return fmt.Sprintf("%s://%d.%s", schema, i, quoteApi)
 }
 
-const (
-	ListTotal = 5644
-)
+//const (
+//	ListTotal = 5644
+//)
 
 func Unzip(resp *http.Response) ([]byte, error) {
 	var reader io.Reader

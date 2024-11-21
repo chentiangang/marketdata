@@ -208,18 +208,11 @@ func (mr *MarketRequest) request(pageNum, pageSize int) (MarketResponse, error) 
 	}
 	defer resp.Body.Close()
 
-	//bs, err := Unzip(respon)
-	//defer respon.Body.Close()
-	//if err != nil {
-	//	xlog.Error("reader error: %s", err)
-	//	return nil, nil
-	//}
 	trim := strings.Trim(string(bs), "jQuery11240699042934591428_1726233885825(")
 	trim = strings.Trim(trim, ");")
 
 	var marketResp MarketResponse
 
-	//fmt.Println(trim)
 	err = json.Unmarshal([]byte(trim), &marketResp)
 	if err != nil {
 		xlog.Error("Error decoding JSON: %s", err)
