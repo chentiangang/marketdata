@@ -1,13 +1,17 @@
 package dongfang
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"marketdata/model"
+	"marketdata/util"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/chentiangang/xlog"
 	pinyin "github.com/mozillazg/go-pinyin"
 )
 
@@ -96,7 +100,11 @@ func (mr *MarketRequest) SetHeader(key, value string) {
 
 // BuildRequest constructs the full request URL and sets default parameters.
 func (mr *MarketRequest) BuildRequest(pageNum, pageSize int) error {
-	u, _ := url.Parse(fmt.Sprintf("%s%s", mr.BaseURL, marketApi))
+	u, err := url.Parse(fmt.Sprintf("%s%s", mr.BaseURL, marketApi))
+	if err != nil {
+		xlog.Error("%s", err)
+		return err
+	}
 
 	// Set default query parameters
 	query := url.Values{}
@@ -120,6 +128,7 @@ func (mr *MarketRequest) BuildRequest(pageNum, pageSize int) error {
 	// 创建新的 GET 请求
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
+		xlog.Error("%s", err)
 		return err
 	}
 	mr.Request = req
@@ -179,7 +188,25 @@ func exist(name string) bool {
 	return false
 }
 
-func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
+func (mr *MarketRequest) request(pageNum, pageSize int) (MarketResponse, error) {
+	err := mr.BuildRequest(pageNum, pageSize)
+	if err != nil {
+		xlog.Error("%s", err)
+		return MarketResponse{}, err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(mr.Request)
+	if err != nil {
+		xlog.Error("%s", err)
+		return MarketResponse{}, err
+	}
+	bs, err := Unzip(resp)
+	if err != nil {
+		xlog.Error("%s", err)
+		return MarketResponse{}, err
+	}
+	defer resp.Body.Close()
 
 	//bs, err := Unzip(respon)
 	//defer respon.Body.Close()
@@ -187,38 +214,52 @@ func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
 	//	xlog.Error("reader error: %s", err)
 	//	return nil, nil
 	//}
-	//trim := strings.Trim(string(bs), "jQuery11240699042934591428_1726233885825(")
-	//trim = strings.Trim(trim, ");")
-	//var resp Resp
+	trim := strings.Trim(string(bs), "jQuery11240699042934591428_1726233885825(")
+	trim = strings.Trim(trim, ");")
+
+	var marketResp MarketResponse
+
+	//fmt.Println(trim)
+	err = json.Unmarshal([]byte(trim), &marketResp)
+	if err != nil {
+		xlog.Error("Error decoding JSON: %s", err)
+		return MarketResponse{}, err
+	}
+	return marketResp, err
+}
+
+func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
+	resp, err := mr.request(1, 1)
+	if err != nil {
+		xlog.Error("%s", err)
+		return nil, err
+	}
+
+	resp, err = mr.request(1, resp.Data.Total)
+	//fmt.Println(resp.Data.Total)
+
 	//
-	////fmt.Println(trim)
-	//err = json.Unmarshal([]byte(trim), &resp)
-	//if err != nil {
-	//	xlog.Error("Error decoding JSON: %s", err)
-	//	return
-	//}
-	//
-	//if len(resp.Data.Diff) == 0 {
-	//	return nil, errors.New("no change")
-	//}
-	//
-	//for _, v := range resp.Data.Diff {
-	//	// 过滤退市
-	//	if fmt.Sprintf("%v", v.F2) == "-" {
-	//		continue
-	//	}
-	//	var q quote.Stock
-	//	q.Name = v.F14
-	//	q.Symbol = v.F12
-	//	q.Price = math.ConvertToFloat64(v.F2)
-	//	q.PriceLimit = math.ConvertToFloat64(v.F3)
-	//	q.DifferenceValue = math.ConvertToFloat64(v.F4)
-	//	q.TurnoverRate = math.ConvertToFloat64(v.F8)
-	//	q.Exchange = v.F13
-	//	q.Alias = alias(strings.TrimSpace(v.F14))
-	//	q.TotalValue = math.ConvertToInt(v.F20)
-	//	q.CirculatingValue = math.ConvertToInt(v.F21)
-	//	qs = append(qs, q)
-	//}
+	if len(resp.Data.Diff) == 0 {
+		return nil, errors.New("no change")
+	}
+
+	for _, v := range resp.Data.Diff {
+		// 过滤退市
+		if fmt.Sprintf("%v", v.F2) == "-" {
+			continue
+		}
+		var q model.Stock
+		q.Name = v.F14
+		q.Symbol = v.F12
+		q.Price = util.ConvertToFloat64(v.F2)
+		q.PriceLimit = util.ConvertToFloat64(v.F3)
+		q.DifferenceValue = util.ConvertToFloat64(v.F4)
+		q.TurnoverRate = util.ConvertToFloat64(v.F8)
+		q.Exchange = v.F13
+		q.Alias = alias(strings.TrimSpace(v.F14))
+		q.TotalValue = util.ConvertToInt(v.F20)
+		q.CirculatingValue = util.ConvertToInt(v.F21)
+		qs = append(qs, q)
+	}
 	return qs, nil
 }
