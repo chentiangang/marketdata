@@ -1,6 +1,6 @@
 package model
 
-type Stock struct {
+type Quote struct {
 	Symbol           string  `json:"symbol"`
 	Name             string  `json:"name"`
 	Price            float64 `json:"price"`
@@ -16,7 +16,7 @@ type Stock struct {
 	Alias    string `msgpack:",omitempty"` //
 }
 
-type StockPtr struct {
+type QuotePtr struct {
 	Symbol           string   `json:"symbol"`
 	Name             string   `json:"name"`
 	Price            *float64 `json:"price"`             // 价格

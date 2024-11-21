@@ -221,7 +221,7 @@ func (mr *MarketRequest) request(pageNum, pageSize int) (MarketResponse, error) 
 	return marketResp, err
 }
 
-func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
+func (mr *MarketRequest) Fetch() (qs []model.Quote, err error) {
 	resp, err := mr.request(1, 1)
 	if err != nil {
 		xlog.Error("%s", err)
@@ -241,7 +241,7 @@ func (mr *MarketRequest) Fetch() (qs []model.Stock, err error) {
 		if fmt.Sprintf("%v", v.F2) == "-" {
 			continue
 		}
-		var q model.Stock
+		var q model.Quote
 		q.Name = v.F14
 		q.Symbol = v.F12
 		q.Price = util.ConvertToFloat64(v.F2)
