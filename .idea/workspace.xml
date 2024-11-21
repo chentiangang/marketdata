@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75267a96-a343-47fc-844d-b1523e78ee6d" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/dongfang/kline.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dongfang/quote.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dongfang/realtime_quotes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dongfang/market.go" beforeDir="false" afterPath="$PROJECT_DIR$/dongfang/market.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dongfang/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/dongfang/util.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/kline.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/kline.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
