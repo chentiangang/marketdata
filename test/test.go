@@ -9,7 +9,7 @@ import (
 func main() {
 	client := marketdata.NewDefaultClient()
 
-	client.RealTimeQuotes.SetSymbols([]string{"0.002957"})
+	client.RealTimeQuotes.SetSymbols([]string{"0.002957", "1.600360"})
 	defer client.RealTimeQuotes.Close()
 
 	for data := range client.RealTimeQuotes.Fetch() {
