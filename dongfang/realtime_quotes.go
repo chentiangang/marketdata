@@ -16,10 +16,9 @@ import (
 )
 
 type RealtimeQuote struct {
-	BaseURL  string
-	Symbols  []string
-	Request  *http.Request
-	Response *http.Response
+	BaseURL string
+	Symbols []string
+	Request *http.Request
 }
 
 type RealtimeQuoteResponse struct {
@@ -129,46 +128,60 @@ func (r *RealtimeQuote) SetSymbols(symbols []string) {
 }
 
 func (r *RealtimeQuote) Fetch() chan []model.QuotePtr {
-	ch := make(chan []model.QuotePtr, 2)
-	//fmt.Println(r.Symbols)
-	err := r.BuildRequest()
-	if err != nil {
-		xlog.Error("%s", err)
-		return nil
-	}
 
-	client := &http.Client{}
-	resp, err := client.Do(r.Request)
-	if err != nil {
-		xlog.Error("%s", err)
-		return nil
-	}
+}
 
-	//defer resp.Body.Close()
-	if err != nil {
-		xlog.Error("%s", err)
-		return nil
-	}
-	scanner := bufio.NewScanner(resp.Body)
-	for {
-		if !scanner.Scan() {
-			if err := scanner.Err(); err != nil {
-				xlog.Error("SseSub scanner error: %s", err)
-			}
-			return nil
+func (r *RealtimeQuote) fetch() chan []model.QuotePtr {
+	ch := make(chan []model.QuotePtr, max(len(r.Symbols)*5, 50))
+
+	go func() {
+		err := r.BuildRequest()
+		if err != nil {
+			xlog.Error("%s", err)
+			return
 		}
-		line := scanner.Text()
-		fmt.Println(line)
-		if len(line) > 0 {
-			data, err := r.parse([]byte(line))
-			if err != nil {
-				xlog.Error("%s", err)
-				continue
-			}
-			ch <- data
+
+		client := &http.Client{}
+		resp, err := client.Do(r.Request)
+		defer close(ch)
+		defer resp.Body.Close()
+		if err != nil {
+			xlog.Error("%s", err)
+			return
 		}
-	}
-	return nil
+
+		if err != nil {
+			xlog.Error("%s", err)
+			return
+		}
+		scanner := bufio.NewScanner(resp.Body)
+		for {
+			select {
+			default:
+				if !scanner.Scan() {
+					if err := scanner.Err(); err != nil {
+						xlog.Error("SseSub scanner error: %s", err)
+					}
+					return
+				}
+				line := scanner.Text()
+				//fmt.Println(line)
+				if len(line) > 0 {
+					data, err := r.parse([]byte(line))
+					//fmt.Println(data)
+					if err != nil {
+						xlog.Error("%s", err)
+						continue
+					}
+					if len(data) > 0 {
+						ch <- data
+					}
+				}
+			}
+
+		}
+	}()
+	return ch
 }
 
 func (r *RealtimeQuote) parse(bs []byte) (qs []model.QuotePtr, err error) {
@@ -234,6 +247,5 @@ func (r *RealtimeQuote) parse(bs []byte) (qs []model.QuotePtr, err error) {
 	return qs, nil
 }
 
-func (r *RealtimeQuote) Close() {
-	r.Response.Body.Close()
+func (r *RealtimeQuote) Restart() {
 }
