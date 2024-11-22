@@ -23,7 +23,7 @@ type KlineImpl interface {
 type RealTimeQuoteImpl interface {
 	Fetch() chan []model.QuotePtr
 	SetSymbols(symbols []string)
-	Restart()
+	Close()
 	//Add(symbol, exchange string)
 	//Delete(symbol string)
 }
