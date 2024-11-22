@@ -88,7 +88,7 @@ var defaultMarketHeader = map[string]string{
 
 func NewDefaultMarketRequest() *MarketRequest {
 	return &MarketRequest{
-		BaseURL:    Domain(),
+		BaseURL:    HttpHost(),
 		MarketType: ChinaMarket,
 	}
 }

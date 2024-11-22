@@ -87,7 +87,7 @@ var defaultRealTimeQuoteHeaders = map[string]string{
 func NewRealtimeQuoteRequest() *Quote {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Quote{
-		BaseURL: Domain() + "/api/qt/ulist/sse",
+		BaseURL: HttpHost() + "/api/qt/ulist/sse",
 		cancel:  cancel,
 		ctx:     ctx,
 	}

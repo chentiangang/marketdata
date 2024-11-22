@@ -31,7 +31,7 @@ var (
 	quoteApi = "push2.eastmoney.com"
 )
 
-func Domain() string {
+func HttpHost() string {
 	i := rand.Int31n(100) + 1
 	return fmt.Sprintf("%s://%d.%s", schema, i, quoteApi)
 }
