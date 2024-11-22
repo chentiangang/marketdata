@@ -10,6 +10,7 @@ type Client struct {
 	Kline          KlineImpl
 	RealTimeQuotes RealTimeQuoteImpl
 	Quote          QuoteImpl
+	Indicator      IndicatorImpl
 }
 
 type MarketImpl interface {
@@ -30,6 +31,9 @@ type RealTimeQuoteImpl interface {
 
 type QuoteImpl interface {
 	Get(symbol string)
+}
+
+type IndicatorImpl interface {
 }
 
 func NewDefaultClient() *Client {
