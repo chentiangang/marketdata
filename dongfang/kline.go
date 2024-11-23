@@ -134,7 +134,7 @@ func (kr *KlineRequest) Fetch(symbol, period, limit string) (model.Kline, error)
 	kline.Symbol = klineResp.Data.Code
 	kline.Name = klineResp.Data.Name
 	for _, i := range klineResp.Data.Klines {
-		var k asset.Snapshot
+		var k *asset.Snapshot
 		row := strings.Split(i, ",")
 		k.Date, _ = time.Parse("2006-01-02 15:04", row[0])
 		k.Open = util.ConvertToFloat64(row[1])   // 开盘价
