@@ -129,7 +129,7 @@ func (r *Quote) BuildRequest() error {
 	return nil
 }
 
-func (r *Quote) SetSymbols(symbols []string) {
+func (r *Quote) Set(symbols []string) {
 	r.Symbols = symbols
 }
 
