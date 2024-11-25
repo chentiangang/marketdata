@@ -2,13 +2,8 @@ package main
 
 import (
 	"fmt"
-<<<<<<< HEAD
-	"time"
 
 	"github.com/chentiangang/marketdata"
-=======
-	"marketdata"
->>>>>>> origin/main
 )
 
 func main() {
