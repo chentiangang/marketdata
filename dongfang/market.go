@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"marketdata/model"
-	"marketdata/util"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/chentiangang/marketdata/model"
+	"github.com/chentiangang/marketdata/util"
 
 	"github.com/chentiangang/xlog"
 	pinyin "github.com/mozillazg/go-pinyin"

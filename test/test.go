@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"marketdata"
 	"time"
+
+	"github.com/chentiangang/marketdata"
 )
 
 func main() {

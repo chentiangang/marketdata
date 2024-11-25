@@ -1,4 +1,4 @@
-module marketdata
+module github.com/chentiangang/marketdata
 
 go 1.23.1
 

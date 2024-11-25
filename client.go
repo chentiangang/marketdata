@@ -1,8 +1,9 @@
 package marketdata
 
 import (
-	"marketdata/dongfang"
-	"marketdata/model"
+	"github.com/chentiangang/marketdata/model"
+
+	"github.com/chentiangang/marketdata/dongfang"
 )
 
 type Client struct {

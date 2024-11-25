@@ -3,12 +3,13 @@ package dongfang
 import (
 	"encoding/json"
 	"fmt"
-	"marketdata/model"
-	"marketdata/util"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/chentiangang/marketdata/model"
+	"github.com/chentiangang/marketdata/util"
 
 	"github.com/chentiangang/xlog"
 	"github.com/cinar/indicator/v2/asset"

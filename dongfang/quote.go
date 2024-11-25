@@ -6,11 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"marketdata/model"
-	"marketdata/util"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/chentiangang/marketdata/model"
+	"github.com/chentiangang/marketdata/util"
 
 	"github.com/chentiangang/xlog"
 	"github.com/duke-git/lancet/v2/strutil"
