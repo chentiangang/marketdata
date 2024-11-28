@@ -1,5 +1,9 @@
 package model
 
+import (
+	"strings"
+)
+
 type Quote struct {
 	Symbol           string  `json:"symbol"`
 	Name             string  `json:"name"`
