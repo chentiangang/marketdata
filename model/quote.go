@@ -31,3 +31,41 @@ type QuotePtr struct {
 	Industry string `msgpack:",omitempty"` // 行业
 	Alias    string `msgpack:",omitempty"` //
 }
+
+
+func (s *Quote) Join() string {
+	return strings.Join([]string{s.Symbol, s.Name, s.Industry, s.Alias}, "-")
+}
+
+func (s *Quote) Update(sptr QuotePtr) {
+	if sptr.Price != nil {
+		s.Price = *sptr.Price
+		if s.TotalShares != 0 {
+			s.TotalValue = int64(s.Price) * s.TotalShares
+		}
+	}
+
+	if sptr.PriceLimit != nil {
+		s.PriceLimit = *sptr.PriceLimit
+	}
+
+	if sptr.TurnoverRate != nil {
+		s.TurnoverRate = *sptr.TurnoverRate
+	}
+
+	if sptr.DifferenceValue != nil {
+		s.DifferenceValue = *sptr.DifferenceValue
+	}
+
+	if sptr.TotalValue != nil {
+		s.TotalValue = *sptr.TotalValue
+	}
+
+	if sptr.CirculatingValue != nil {
+		s.CirculatingValue = *sptr.CirculatingValue
+	}
+	if sptr.TotalShares != nil {
+		s.TotalShares = *sptr.TotalShares
+	}
+}
+
