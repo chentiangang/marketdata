@@ -2,6 +2,7 @@ package dongfang
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -102,7 +103,7 @@ func (kr *KlineRequest) BuildRequest(symbol, period, limit string) error {
 	return nil
 }
 
-func (kr *KlineRequest) Fetch(symbol, period, limit string) (model.Kline, error) {
+func (kr *KlineRequest) fetch(symbol, period, limit string) (model.Kline, error) {
 	err := kr.BuildRequest(symbol, period, limit)
 	if err != nil {
 		xlog.Error("%s", err)
@@ -146,4 +147,26 @@ func (kr *KlineRequest) Fetch(symbol, period, limit string) (model.Kline, error)
 		kline.Snapshots = append(kline.Snapshots, k)
 	}
 	return kline, nil
+}
+
+const (
+	DLine  = "101" // 日线
+	WLine  = "102" //  周线
+	MAline = "103" // 月线
+)
+
+func (kr *KlineRequest) Fetch(symbol, period, limit string) (model.Kline, error) {
+	switch period {
+	case "45":
+		kline, err := kr.fetch(symbol, "15", limit)
+		if err != nil {
+			return model.Kline{}, err
+		}
+		kline.Snapshots = MergeTo45MinKlines(kline.Snapshots)
+		return kline, nil
+	case "1", "5", "15", "30", "60", "120", DLine, WLine, MAline:
+		return kr.fetch(symbol, period, limit)
+	default:
+		return model.Kline{}, errors.New("invalid period")
+	}
 }
