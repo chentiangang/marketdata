@@ -2,6 +2,7 @@ package model
 
 import (
 	"strings"
+	"fmt"
 )
 
 type Quote struct {
