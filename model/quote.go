@@ -37,7 +37,7 @@ type QuotePtr struct {
 }
 
 func (q *Quote) KlineSymbol() string {
-	return q.Exchange + "."+ q.Symbol
+	return fmt.Sprintf("%d.%s",q.Exchange , q.Symbol)
 }
 
 
