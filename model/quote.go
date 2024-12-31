@@ -36,6 +36,10 @@ type QuotePtr struct {
 	Alias    string `msgpack:",omitempty"` //
 }
 
+func (q *Quote) KlineSymbol() string {
+	return q.Exchange + "."+ q.Symbol
+}
+
 
 func (s *Quote) Join() string {
 	return strings.Join([]string{s.Symbol, s.Name, s.Industry, s.Alias}, "-")
