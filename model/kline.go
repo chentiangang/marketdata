@@ -59,3 +59,7 @@ func (k *Kline) LastLows(n int) []float64 {
 
 	return prices
 }
+
+func (k *Kline) Len() int {
+	return len(k.Snapshots)
+}
